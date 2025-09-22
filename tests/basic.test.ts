@@ -43,15 +43,7 @@ describe('MaxRectsPackerMultiPage', () => {
       packer.add(30, 30, i);
     }
     packer.add(100, 101, 'invalid');
-
-    console.log(packer.queue);
-    console.log(packer.queue.length);
-
     const result = packer.pack();
-
-    console.log(result.pages[1]);
-
-
     expect(result.unpacked.length).toBe(1);
     expect(result.pages.length).toBe(2);
     expect(result.pages[1].bins.length).toBe(1);
