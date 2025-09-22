@@ -1,0 +1,44 @@
+{
+  "name": "max-rects",
+  "version": "1.0.0",
+  "description": "基于MaxRects算法的矩形装箱库，支持多页布局和旋转矩形优化",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "url": "git+https://github.com/gaoyia/max-rects.git",
+    "type": "git"
+  },
+  "homepage": "https://gaoyia.github.io/max-rects/",
+  "bugs": {
+    "url": "https://github.com/gaoyia/web-queue/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format esm,cjs",
+    "dev": "tsup src/index.ts --dts --watch --format esm,cjs",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [
+    "max-rects",
+    "rectangle-packing",
+    "bin-packing",
+    "texture-packing",
+    "algorithm"
+  ],
+  "author": "gaoyi<gaoyia@qq.com>",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.0",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.5.2",
+    "jest": "^30.1.3",
+    "ts-jest": "^29.4.4",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
+}
