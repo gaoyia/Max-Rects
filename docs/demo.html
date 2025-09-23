@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>MaxRects 算法演示</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 8px 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0069d9;
+    }
+    .container {
+      width: 1000px;
+      height: 1000px;
+      position: relative;
+      background: #f5f5f5;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.5);
+      margin-top: 20px;
+    }
+    .rect {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.5);
+      cursor: move;
+    }
+  </style>
+</head>
+<body>
+  <h1>MaxRects 算法演示</h1>
+  <div class="controls">
+    <button id="add-small">添加小矩形 (50×50)</button>
+    <button id="add-medium">添加中矩形 (100×100)</button>
+    <button id="add-large">添加大矩形 (200×150)</button>
+    <button id="add-random">添加随机矩形</button>
+    <button id="clear">清空所有</button>
+    <button id="remove">删除最后一个</button>
+  </div>
+  <div class="container" id="container"></div>
+
+  <script type="module">
+    import { MaxRectsPacker } from '../dist/index.mjs';
+    
+    const container = document.getElementById('container');
+    const colors = ['#FF5252', '#FF4081', '#E040FB', '#7C4DFF', '#536DFE', '#448AFF', '#40C4FF', '#18FFFF', '#64FFDA', '#69F0AE', '#B2FF59', '#EEFF41', '#FFFF00', '#FFD740', '#FFAB40', '#FF6E40'];
+    let rects = [];
+    let zIndex = 1;
+    const packer = new MaxRectsPacker(1000, 1000, 5);
+    function addRect(width, height) {
+      packer.add(width, height, { color: colors[Math.floor(Math.random() * colors.length)] });
+      console.log(packer);
+      const result = packer.pack();
+      
+      // 清除现有矩形
+      rects.forEach(rect => container.removeChild(rect));
+      rects = [];
+      
+      // 重新渲染所有矩形
+      result.packed.forEach(rect => {
+        const div = document.createElement('div');
+        div.className = 'rect';
+        div.style.width = `${rect.w}px`;
+        div.style.height = `${rect.h}px`;
+        div.style.left = `${rect.x}px`;
+        div.style.top = `${rect.y}px`;
+        div.style.backgroundColor = rect.data.color;
+        div.style.zIndex = zIndex++;
+        div.textContent = `${rect.w}×${rect.h}`;
+        container.appendChild(div);
+        rects.push(div);
+      });
+    }
+
+    document.getElementById('add-small').addEventListener('click', () => addRect(50, 50));
+    document.getElementById('add-medium').addEventListener('click', () => addRect(100, 100));
+    document.getElementById('add-large').addEventListener('click', () => addRect(200, 150));
+    document.getElementById('add-random').addEventListener('click', () => {
+      const width = 50 + Math.floor(Math.random() * 200);
+      const height = 50 + Math.floor(Math.random() * 200);
+      addRect(width, height);
+    });
+    document.getElementById('clear').addEventListener('click', () => {
+      rects.forEach(rect => container.removeChild(rect));
+      rects = [];
+      packer.reset();
+    });
+    document.getElementById('remove').addEventListener('click', () => {
+      if (rects.length > 0) {
+        container.removeChild(rects.pop());
+      }
+    });
+
+    // 添加拖拽功能
+    container.addEventListener('mousedown', function(e) {
+      const target = e.target.closest('.rect');
+      if (!target) return;
+
+      let isDragging = true;
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const rectX = parseInt(target.style.left) || 0;
+      const rectY = parseInt(target.style.top) || 0;
+
+      function moveRect(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        
+        const newX = Math.max(0, Math.min(container.clientWidth - target.offsetWidth, rectX + dx));
+        const newY = Math.max(0, Math.min(container.clientHeight - target.offsetHeight, rectY + dy));
+        
+        target.style.left = `${newX}px`;
+        target.style.top = `${newY}px`;
+      }
+
+      function stopDrag() {
+        isDragging = false;
+        document.removeEventListener('mousemove', moveRect);
+        document.removeEventListener('mouseup', stopDrag);
+      }
+
+      document.addEventListener('mousemove', moveRect);
+      document.addEventListener('mouseup', stopDrag);
+    });
+  </script>
+</body>
+</html>

@@ -38,10 +38,10 @@ export class MaxRectsPacker {
       // 查找最佳合适位置
       this.free.forEach((r, i) => {
         // 不旋转
-        if (r.w >= item.w && r.h >= item.h) {
+        if (r.w >= item.w + 2 * this.gap && r.h >= item.h + 2 * this.gap) {
           const score = BSSF
-            ? Math.min(r.w - item.w, r.h - item.h)
-            : (r.w - item.w) * (r.h - item.h);
+            ? Math.min(r.w - item.w - 2 * this.gap, r.h - item.h - 2 * this.gap)
+            : (r.w - item.w - 2 * this.gap) * (r.h - item.h - 2 * this.gap);
           if (BSSF ? score < bestScore : score > bestScore) {
             bestScore = score;
             best = { x: r.x, y: r.y, w: item.w, h: item.h, rot: false, data: item.data };
@@ -49,10 +49,10 @@ export class MaxRectsPacker {
           }
         }
         // 旋转
-        if (r.w >= item.h && r.h >= item.w) {
+        if (r.w >= item.h + 2 * this.gap && r.h >= item.w + 2 * this.gap) {
           const score = BSSF
-            ? Math.min(r.w - item.h, r.h - item.w)
-            : (r.w - item.h) * (r.h - item.w);
+            ? Math.min(r.w - item.h - 2 * this.gap, r.h - item.w - 2 * this.gap)
+            : (r.w - item.h - 2 * this.gap) * (r.h - item.w - 2 * this.gap);
           if (BSSF ? score < bestScore : score > bestScore) {
             bestScore = score;
             best = { x: r.x, y: r.y, w: item.h, h: item.w, rot: true, data: item.data };
@@ -74,26 +74,32 @@ export class MaxRectsPacker {
     return { packed: this.bins, unpacked: unpacked};  // 返回打包后的矩形和未放置的矩形
   }
 
-/* 1. 先删后拆：保证被占用的那块不再留在 free 里 */
-splitAndMerge(freeIndex: number, used: Rect): void {
-  const edges: FreeRect[] = [];
-  this.free.forEach((r, i) => {
-    if (i === freeIndex) {
-      // 被占矩形直接丢弃，只把剩余空区加回来
-      edges.push(...this.splitRect(r, used));
-      return;
-    }
-    if (this.intersect(r, used)) {
-      edges.push(...this.splitRect(r, used));
-    } else {
-      edges.push(r);
-    }
-  });
-  this.free = this.merge(edges);
-}
+  /* 1. 先删后拆：保证被占用的那块不再留在 free 里 */
+  splitAndMerge(freeIndex: number, used: Rect): void {
+    const edges: FreeRect[] = [];
+    this.free.forEach((r, i) => {
+      if (i === freeIndex) {
+        // 被占矩形直接丢弃，只把剩余空区加回来
+        edges.push(...this.splitRect(r, used));
+        return;
+      }
+      if (this.intersect(r, used)) {
+        edges.push(...this.splitRect(r, used));
+      } else {
+        edges.push(r);
+      }
+    });
+    this.free = this.merge(edges);
+  }
 
   intersect(a: FreeRect, b: Rect): boolean {
-    return !(a.x + a.w <= b.x || b.x + b.w <= a.x || a.y + a.h <= b.y || b.y + b.h <= a.y);
+    const g = this.gap;
+    return !(
+      a.x + a.w <= b.x - g ||
+      b.x + b.w + g <= a.x ||
+      a.y + a.h <= b.y - g ||
+      b.y + b.h + g <= a.y
+    );
   }
 
   splitRect(r: FreeRect, used: Rect): FreeRect[] {
@@ -109,9 +115,17 @@ splitAndMerge(freeIndex: number, used: Rect): void {
     const left   = { x: r.x,                y: Math.max(uy, r.y),   w: ux - r.x, h: Math.min(uh, r.y + r.h - uy) };
     const right  = { x: ux + uw,            y: Math.max(uy, r.y),   w: r.x + r.w - (ux + uw), h: Math.min(uh, r.y + r.h - uy) };
 
-    [top, bottom, left, right].forEach(rect => {
-      if (rect.w > 0 && rect.h > 0) res.push(rect);
-    });
+    // 添加有效的矩形（确保不会超出容器边界）
+  [ top, bottom, left, right ].forEach(rect => {
+    // 裁剪到页面边界内
+    const x1 = Math.max(rect.x, 0);
+    const y1 = Math.max(rect.y, 0);
+    const x2 = Math.min(rect.x + rect.w, this.pageW);
+    const y2 = Math.min(rect.y + rect.h, this.pageH);
+    if (x2 > x1 && y2 > y1) {
+      res.push({ x: x1, y: y1, w: x2 - x1, h: y2 - y1 });
+    }
+  });
     return res;
   }
 
