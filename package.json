@@ -1,6 +1,6 @@
 {
   "name": "max-rects",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "基于MaxRects算法的矩形装箱库，支持多页布局和旋转矩形优化",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
