@@ -38,9 +38,9 @@ jobs:
       - name: Build project and copy assets
         run: pnpm run build
 
-      - name: Copy assets
+      - name: Copy dist folder to docs
         run: |
-        cp -r ./dest ./docs
+          cp -r ./dist ./docs/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
