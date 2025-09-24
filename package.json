@@ -23,8 +23,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prepublishOnly": "pnpm run build",
-    "release": "pnpm publish --no-git-checks",
-    "docs:build": "pnpm run build && copy donate.jpg docs\\donate.jpg"
+    "release": "pnpm publish --no-git-checks"
   },
   "keywords": [
     "max-rects",

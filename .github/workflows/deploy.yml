@@ -36,7 +36,7 @@ jobs:
         run: pnpm install
 
       - name: Build project and copy assets
-        run: pnpm run docs:build
+        run: pnpm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
