@@ -38,6 +38,10 @@ jobs:
       - name: Build project and copy assets
         run: pnpm run build
 
+      - name: Copy assets
+        run: |
+        cp -r ./dest ./docs
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
