@@ -23,7 +23,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "prepublishOnly": "pnpm run build",
-    "release": "pnpm publish --no-git-checks"
+    "release": "pnpm publish --no-git-checks",
+    "docs:build": "pnpm run build && copy donate.jpg docs\\donate.jpg"
   },
   "keywords": [
     "max-rects",
@@ -33,7 +34,7 @@
     "algorithm"
   ],
   "author": "gaoyi<gaoyia@qq.com>",
-  "license": "ISC",
+  "license": "MIT",
   "packageManager": "pnpm@10.15.0",
   "devDependencies": {
     "@types/jest": "^30.0.0",

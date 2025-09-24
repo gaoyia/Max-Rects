@@ -110,6 +110,10 @@ const { pages, unpacked } = multiPacker.pack()
 
 ```
 
+## 在线演示
+
+您可以访问我们的[在线演示页面](https://gaoyia.github.io/max-rects/)查看和测试算法效果。
+
 ## API文档
 
 ### MaxRectsPacker
@@ -179,6 +183,14 @@ pnpm test  # 运行测试
 pnpm test:watch  # 监听模式运行测试
 pnpm test:coverage  # 生成测试覆盖率报告
 ```
+
+## 支持项目
+
+如果您觉得这个项目对您有帮助，欢迎通过以下方式支持我们：
+
+![捐赠二维码](donate.jpg)
+
+您的支持是我们持续改进和维护项目的动力！
 
 ## 许可证
 
