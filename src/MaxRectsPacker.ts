@@ -44,7 +44,7 @@ export class MaxRectsPacker {
             : (r.w - item.w - 2 * this.gap) * (r.h - item.h - 2 * this.gap);
           if (BSSF ? score < bestScore : score > bestScore) {
             bestScore = score;
-            best = { x: r.x, y: r.y, w: item.w, h: item.h, rot: false, data: item.data };
+            best = { x: r.x + this.gap, y: r.y + this.gap, w: item.w, h: item.h, rot: false, data: item.data };
             bestIndex = i;
           }
         }
@@ -55,7 +55,7 @@ export class MaxRectsPacker {
             : (r.w - item.h - 2 * this.gap) * (r.h - item.w - 2 * this.gap);
           if (BSSF ? score < bestScore : score > bestScore) {
             bestScore = score;
-            best = { x: r.x, y: r.y, w: item.h, h: item.w, rot: true, data: item.data };
+            best = { x: r.x + this.gap, y: r.y + this.gap, w: item.h, h: item.w, rot: true, data: item.data };
             bestIndex = i;
           }
         }
@@ -76,15 +76,25 @@ export class MaxRectsPacker {
 
   /* 1. 先删后拆：保证被占用的那块不再留在 free 里 */
   splitAndMerge(freeIndex: number, used: Rect): void {
+    // 创建一个考虑gap的used矩形用于计算free区域
+    const usedWithGap: Rect = {
+      x: used.x - this.gap,
+      y: used.y - this.gap,
+      w: used.w + 2 * this.gap,
+      h: used.h + 2 * this.gap,
+      rot: used.rot,
+      data: used.data
+    };
+
     const edges: FreeRect[] = [];
     this.free.forEach((r, i) => {
       if (i === freeIndex) {
         // 被占矩形直接丢弃，只把剩余空区加回来
-        edges.push(...this.splitRect(r, used));
+        edges.push(...this.splitRect(r, usedWithGap));
         return;
       }
-      if (this.intersect(r, used)) {
-        edges.push(...this.splitRect(r, used));
+      if (this.intersect(r, usedWithGap)) {
+        edges.push(...this.splitRect(r, usedWithGap));
       } else {
         edges.push(r);
       }
@@ -93,22 +103,22 @@ export class MaxRectsPacker {
   }
 
   intersect(a: FreeRect, b: Rect): boolean {
-    const g = this.gap;
+    // 不再考虑gap，直接使用矩形实际边界
     return !(
-      a.x + a.w <= b.x - g ||
-      b.x + b.w + g <= a.x ||
-      a.y + a.h <= b.y - g ||
-      b.y + b.h + g <= a.y
+      a.x + a.w <= b.x ||
+      b.x + b.w <= a.x ||
+      a.y + a.h <= b.y ||
+      b.y + b.h <= a.y
     );
   }
 
   splitRect(r: FreeRect, used: Rect): FreeRect[] {
     const res: FreeRect[] = [];
-    const g = this.gap;
-    const ux = used.x - g;
-    const uy = used.y - g;
-    const uw = used.w + 2 * g;
-    const uh = used.h + 2 * g;
+    // 不再考虑gap，直接使用实际矩形大小
+    const ux = used.x;
+    const uy = used.y;
+    const uw = used.w;
+    const uh = used.h;
 
     const top    = { x: r.x,                y: r.y,                 w: r.w, h: uy - r.y };
     const bottom = { x: r.x,                y: uy + uh,             w: r.w, h: r.y + r.h - (uy + uh) };
@@ -156,9 +166,10 @@ export class MaxRectsPacker {
   }
 
   canMerge(a: FreeRect, b: FreeRect): boolean {
+    // 合并不再考虑gap
     return (
-      (a.x === b.x && a.y + a.h + this.gap >= b.y && a.w === b.w) ||
-      (a.y === b.y && a.x + a.w + this.gap >= b.x && a.h === b.h)
+      (a.x === b.x && a.y + a.h >= b.y && a.w === b.w) ||
+      (a.y === b.y && a.x + a.w >= b.x && a.h === b.h)
     );
   }
 }
