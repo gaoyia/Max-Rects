@@ -3,8 +3,8 @@ export interface Rect {
   y: number;
   w: number;
   h: number;
-  rot: boolean;
-  data?: any;
+  rot: boolean; // 是否旋转
+  data?: any; // 关联数据
 }
 
 export interface FreeRect {

@@ -177,12 +177,15 @@ class MaxRectsPackerMultiPage {
 ## 开发
 
 ```bash
-pnpm dev  # 开发模式
-pnpm build  # 生产构建
-pnpm test  # 运行测试
-pnpm test:watch  # 监听模式运行测试
-pnpm test:coverage  # 生成测试覆盖率报告
+pnpm dev        # 开发模式，监听源文件变化并重新构建
+pnpm build:docs # 构建项目并将产物复制到 docs 目录
+pnpm build      # 生产构建
+pnpm test       # 运行测试
+pnpm test:watch # 监听模式运行测试
+pnpm test:coverage # 生成测试覆盖率报告
 ```
+
+使用 `pnpm dev` 启动开发模式后，可以通过访问 http://localhost:5000 查看演示页面。
 
 ## 支持项目
 

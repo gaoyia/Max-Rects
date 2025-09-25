@@ -35,12 +35,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build project and copy assets
-        run: pnpm run build
-
-      - name: Copy dist folder to docs
-        run: |
-          cp -r ./dist ./docs/
+      - name: Build project and copy assets to docs
+        run: pnpm run build:docs
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

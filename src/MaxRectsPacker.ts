@@ -85,7 +85,6 @@ export class MaxRectsPacker {
       rot: used.rot,
       data: used.data
     };
-
     const edges: FreeRect[] = [];
     this.free.forEach((r, i) => {
       if (i === freeIndex) {
@@ -101,7 +100,6 @@ export class MaxRectsPacker {
     });
     this.free = this.merge(edges);
   }
-
   intersect(a: FreeRect, b: Rect): boolean {
     // 不再考虑gap，直接使用矩形实际边界
     return !(
